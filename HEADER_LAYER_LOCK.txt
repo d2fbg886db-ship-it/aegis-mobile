@@ -1,0 +1,6 @@
+AEGIS VER2 HEADER LAYER FIX
+- Fullscreen Ver2 remains the visual authority.
+- Only the baked-in top-left AEGIS/GUARDIAN block was separated.
+- SYSTEM ONLINE, LINK:JARVIS, gear, CORE, all panels and all lower UI are untouched.
+- Header logo is independently rendered at 29.5% viewport width, anchored at left 3.05%, top 1.05%.
+- No clone of SYSTEM ONLINE or LINK:JARVIS is used.
