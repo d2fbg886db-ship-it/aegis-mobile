@@ -1,7 +1,7 @@
 {
-  "name": "AEGIS Ver2 iPhone 11 Pro Max Top Left Scale Fix",
+  "name": "AEGIS Ver2 Header Transparent",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=214sc",
+  "start_url": "./index.html?v=221",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
