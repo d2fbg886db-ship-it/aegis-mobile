@@ -1,95 +1,90 @@
-<!doctype html><html lang="ja"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#000"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="AEGIS">
-<link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><title>AEGIS Mobile V1.0</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:#000;min-height:100%;overflow-x:hidden}
-body{padding:calc(env(safe-area-inset-top) + 10px) 0 env(safe-area-inset-bottom)}
-#app{position:relative;width:100%;max-width:430px;margin:auto;background:#000}
-#master{display:block;width:100%;height:auto;pointer-events:none;user-select:none}
-#voiceMask{position:absolute;left:2.5%;top:61.25%;width:95%;height:3.45%;background:rgba(2,7,17,.94);z-index:4;pointer-events:none}
-#voice{position:absolute;left:2.5%;top:61.25%;width:95%;height:3.45%;z-index:5;pointer-events:none}
-#glow{position:absolute;left:50%;top:37.8%;width:36%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
-background:radial-gradient(circle,rgba(50,220,255,.24),rgba(15,100,255,.08) 42%,transparent 72%);filter:blur(11px);mix-blend-mode:screen;opacity:.06;z-index:3;pointer-events:none}
-.tap{position:absolute;border:0;background:transparent;z-index:8}.core{left:28%;top:29%;width:44%;height:23%}
-.toast{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);padding:7px 11px;border:1px solid rgba(80,220,255,.28);border-radius:999px;background:rgba(0,5,12,.9);color:#7feaff;font:11px -apple-system,sans-serif;opacity:0;transition:.15s;z-index:9;white-space:nowrap}.toast.on{opacity:1}
-
-/* === AEGIS V1.0 transparent animation integration === */
-#animLayer{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
-#coreAnim{position:absolute;left:50%;top:37.8%;width:46%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
-.anim-ring{position:absolute;border-radius:50%;border:1px solid rgba(73,221,255,.42);box-shadow:0 0 7px rgba(45,207,255,.18);mix-blend-mode:screen}
-.ar1{inset:4%;border-style:dashed;animation:aSpin 11s linear infinite}
-.ar2{inset:12%;border-width:1.2px;border-left-color:transparent;border-right-color:transparent;animation:aSpinR 7.8s linear infinite}
-.ar3{inset:21%;border-style:dotted;opacity:.72;animation:aSpin 5.4s linear infinite}
-.ar4{inset:30%;border-width:1.4px;border-top-color:transparent;border-bottom-color:rgba(168,88,255,.42);animation:aSpinR 3.9s linear infinite}
-.anim-arc{position:absolute;border-radius:50%;border:1.5px solid transparent;border-top-color:rgba(78,230,255,.75);border-right-color:rgba(97,112,255,.58);filter:drop-shadow(0 0 4px rgba(70,220,255,.42));mix-blend-mode:screen}
-.aa1{inset:8%;animation:aSpin 6.2s linear infinite}.aa2{inset:25%;animation:aSpinR 4.4s linear infinite}
-#coreBreath{position:absolute;inset:34%;border-radius:50%;background:radial-gradient(circle,rgba(87,234,255,.24),rgba(33,120,255,.08) 48%,transparent 72%);filter:blur(6px);mix-blend-mode:screen;animation:aBreath 2.8s ease-in-out infinite}
-#verticalBeam{position:absolute;left:50%;top:8%;bottom:7%;width:1px;transform:translateX(-50%);background:linear-gradient(transparent,rgba(81,225,255,.08) 18%,rgba(83,230,255,.56) 48%,rgba(160,77,255,.32) 68%,transparent);box-shadow:0 0 8px rgba(70,220,255,.34);opacity:.42;animation:aBeam 2.9s ease-in-out infinite}
-#scanLine{position:absolute;left:19%;right:19%;height:1px;background:linear-gradient(90deg,transparent,rgba(77,227,255,.72),transparent);box-shadow:0 0 7px rgba(67,220,255,.45);opacity:.0;animation:aScan 4.6s ease-in-out infinite}
-#particles{position:absolute;inset:0}
-.ap{position:absolute;width:2px;height:2px;border-radius:50%;background:rgba(92,228,255,.9);box-shadow:0 0 5px rgba(75,220,255,.7);opacity:.55;animation:aDrift var(--dur) ease-in-out var(--delay) infinite alternate}
-.ap.v{background:rgba(174,89,255,.88);box-shadow:0 0 5px rgba(170,75,255,.65)}
-#modePulse{position:absolute;left:50%;top:58.1%;width:36%;height:2.3%;transform:translateX(-50%);border-radius:999px;background:radial-gradient(ellipse,rgba(56,216,255,.10),transparent 70%);filter:blur(5px);opacity:.35;animation:aMode 2.5s ease-in-out infinite}
-body.listening #coreAnim .anim-ring{animation-duration:2.8s}
-body.listening #coreAnim .ar2{animation-duration:2.1s}
-body.listening #coreAnim .ar3{animation-duration:1.7s}
-body.listening #coreAnim .ar4{animation-duration:1.3s}
-body.listening #coreBreath{animation-duration:.85s}
-body.listening #verticalBeam{opacity:.72}
-@keyframes aSpin{to{transform:rotate(360deg)}}@keyframes aSpinR{to{transform:rotate(-360deg)}}
-@keyframes aBreath{0%,100%{transform:scale(.92);opacity:.42}50%{transform:scale(1.08);opacity:.88}}
-@keyframes aBeam{0%,100%{opacity:.22}50%{opacity:.62}}
-@keyframes aScan{0%{top:22%;opacity:0}10%{opacity:.55}82%{opacity:.48}100%{top:79%;opacity:0}}
-@keyframes aDrift{0%{transform:translate3d(-3px,-5px,0) scale(.7);opacity:.25}100%{transform:translate3d(5px,8px,0) scale(1.35);opacity:.9}}
-@keyframes aMode{0%,100%{opacity:.18;transform:translateX(-50%) scaleX(.88)}50%{opacity:.48;transform:translateX(-50%) scaleX(1.08)}}
-@media (prefers-reduced-motion:reduce){.anim-ring,.anim-arc,#coreBreath,#verticalBeam,#scanLine,.ap,#modePulse{animation:none!important}}
-
-</style></head><body><div id="app">
-<img id="master" src="aegis-mobile-master-v1.jpg?v=100" alt="AEGIS Guardian AI">
-
-<div id="animLayer" aria-hidden="true">
-  <div id="verticalBeam"></div>
-  <div id="scanLine"></div>
-  <div id="modePulse"></div>
-  <div id="coreAnim">
-    <div class="anim-ring ar1"></div>
-    <div class="anim-ring ar2"></div>
-    <div class="anim-ring ar3"></div>
-    <div class="anim-ring ar4"></div>
-    <div class="anim-arc aa1"></div>
-    <div class="anim-arc aa2"></div>
-    <div id="coreBreath"></div>
-    <div id="particles"></div>
-  </div>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#020711">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AEGIS">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>AEGIS Mobile V0.2</title>
+  <style>
+    :root{
+      --bg:#020711;--panel:#061321;--line:rgba(84,223,255,.28);
+      --cyan:#6eeaff;--cyan2:#1ba9ff;--text:#e9fbff;--muted:#7ca4b3;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;background:radial-gradient(circle at 50% 34%,#082941 0,#020711 43%,#01040a 100%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;min-height:100%}
+    body{padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+    .wrap{max-width:430px;margin:0 auto;min-height:100vh;position:relative;overflow:hidden}
+    .grid{position:absolute;inset:0;opacity:.12;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:26px 26px;mask-image:linear-gradient(#000,transparent 80%);pointer-events:none}
+    header{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 6px;position:relative;z-index:5}
+    .brand{font-weight:700;letter-spacing:.15em}.sub{font-size:11px;color:var(--muted);margin-top:3px}.badge{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:7px 9px;color:var(--cyan)}
+    .hud{border:1px solid var(--line);border-radius:26px;padding:15px;background:rgba(3,12,22,.62);backdrop-filter:blur(8px);position:relative;overflow:hidden}
+    .row{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted)}
+    .mini{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .mini>div{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:rgba(5,17,30,.62);display:flex;justify-content:space-between}
+    .mini b{color:var(--cyan)}
+    .stage{position:relative;width:min(92vw,390px);aspect-ratio:1;margin:-4px auto -8px;display:grid;place-items:center;isolation:isolate}
+    .stage:before{content:"";position:absolute;inset:7%;border-radius:50%;background:radial-gradient(circle,rgba(60,220,255,.25),transparent 62%);filter:blur(10px);animation:breathe 3.3s ease-in-out infinite}
+    .ring,.arc,.halo,.scan,.beam,.orb,.particle{position:absolute}
+    .ring{border-radius:50%;border:1px solid var(--cyan);box-shadow:0 0 12px rgba(70,220,255,.35),inset 0 0 12px rgba(70,220,255,.15)}
+    .r1{inset:8%;border-style:dashed;opacity:.5;animation:spin 9s linear infinite}.r2{inset:15%;border-width:2px;border-left-color:transparent;border-right-color:transparent;animation:spinR 6.8s linear infinite}.r3{inset:23%;border-style:dotted;animation:spin 4.8s linear infinite}.r4{inset:31%;border-width:2px;border-top-color:transparent;animation:spinR 3.6s linear infinite}.r5{inset:39%;border-left-color:transparent;border-bottom-color:transparent;animation:spin 2.5s linear infinite}
+    .arc{border-radius:50%;border:2px solid transparent;border-top-color:var(--cyan);border-right-color:var(--cyan);filter:drop-shadow(0 0 6px var(--cyan));opacity:.75}.a1{inset:6%;animation:spin 5.5s linear infinite}.a2{inset:20%;animation:spinR 4.1s linear infinite}.a3{inset:35%;animation:spin 2.9s linear infinite}
+    .halo{left:18%;right:18%;height:9%;border:1px solid var(--cyan);border-radius:50%;opacity:.5;filter:drop-shadow(0 0 7px var(--cyan))}.h1{top:7%;animation:float 3s ease-in-out infinite}.h2{bottom:8%;animation:floatR 3.7s ease-in-out infinite}
+    .scan{left:10%;right:10%;height:1px;background:var(--cyan);box-shadow:0 0 9px var(--cyan);z-index:7;animation:scan 3s ease-in-out infinite}.beam{top:6%;bottom:6%;width:1px;background:linear-gradient(transparent,var(--cyan),transparent);left:50%;opacity:.4;animation:beam 2.5s ease-in-out infinite}
+    .orb{width:27%;aspect-ratio:1;border-radius:50%;border:2px solid var(--cyan);background:radial-gradient(circle at 50% 45%,rgba(85,235,255,.38),rgba(3,15,29,.96) 65%);box-shadow:0 0 34px rgba(80,228,255,.62),inset 0 0 30px rgba(80,228,255,.28);z-index:8;display:grid;place-items:center;animation:orb 2s ease-in-out infinite}
+    .shield{width:46%;aspect-ratio:1;clip-path:polygon(50% 0,92% 16%,79% 72%,50% 100%,21% 72%,8% 16%);border:2px solid var(--cyan);display:grid;place-items:center;font-weight:800;color:var(--cyan);text-shadow:0 0 12px var(--cyan)}
+    .particle{width:3px;height:3px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);opacity:.65;animation:drift 3s ease-in-out infinite alternate}
+    .labels{text-align:center;margin-top:-12px}.mode{font-weight:700;letter-spacing:.12em}.desc{font-size:12px;color:var(--muted);margin-top:5px}
+    .flow{margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:10px;background:rgba(4,14,25,.68)}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.step{border:1px solid var(--line);border-radius:9px;padding:7px 2px;text-align:center;font-size:10px;color:var(--muted)}.step.active{border-color:var(--cyan);color:var(--text);background:rgba(70,220,255,.09)}#decision{font-size:12px;color:var(--muted);margin-top:9px}
+    .buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.buttons button{appearance:none;border:1px solid var(--line);border-radius:12px;padding:13px 8px;background:rgba(4,16,29,.82);color:var(--text);font:inherit}.buttons button:active{background:rgba(70,220,255,.12)}
+    .stage.listening .r1{animation-duration:4s}.stage.listening .r2{animation-duration:3s}.stage.listening .r3{animation-duration:2.2s}.stage.verifying .r1{animation-duration:2.7s}.stage.verifying .r2{animation-duration:1.9s}.stage.verifying .r3{animation-duration:1.4s}.stage.verifying .r4{animation-duration:1.05s}.stage.verifying .r5{animation-duration:.82s}.stage.verifying .scan{animation-duration:1.3s}.stage.approved .orb{animation-duration:.7s}.stage.stopped .ring,.stage.stopped .arc,.stage.stopped .halo,.stage.stopped .scan,.stage.stopped .beam,.stage.stopped .particle{animation-play-state:paused;opacity:.16}.stage.stopped .orb{animation:none}
+    @keyframes spin{to{transform:rotate(360deg)}}@keyframes spinR{to{transform:rotate(-360deg)}}@keyframes breathe{50%{transform:scale(1.06);opacity:1}}@keyframes orb{50%{transform:scale(1.05)}}@keyframes scan{0%{top:17%;opacity:0}20%{opacity:.9}80%{opacity:.9}100%{top:82%;opacity:0}}@keyframes beam{50%{opacity:.75;transform:scaleY(1.04)}}@keyframes float{50%{transform:translateY(5px) scaleX(1.04)}}@keyframes floatR{50%{transform:translateY(-5px) scaleX(.9)}}@keyframes drift{to{transform:translate(5px,8px) scale(1.35);opacity:1}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="grid"></div>
+  <header>
+    <div><div class="brand">AEGIS</div><div class="sub">GUARDIAN AI · MOBILE CORE</div></div>
+    <div class="badge" id="badge">SYSTEM ONLINE</div>
+  </header>
+  <main class="hud">
+    <div class="row"><span>LINK: JARVIS</span><span>SECURITY: LOCKED</span></div>
+    <div class="mini"><div><span>THREAT</span><b>LOW</b></div><div><span>INTEGRITY</span><b>100%</b></div></div>
+    <section class="stage standby" id="stage">
+      <div class="beam"></div><div class="scan"></div>
+      <div class="halo h1"></div><div class="halo h2"></div>
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div><div class="ring r5"></div>
+      <div class="arc a1"></div><div class="arc a2"></div><div class="arc a3"></div>
+      <div class="orb"><div class="shield">A</div></div>
+      <div id="particles"></div>
+    </section>
+    <div class="mini"><div><span>SCAN MODE</span><b id="scanMode">PASSIVE</b></div><div><span>MEMORY</span><b>ISOLATED</b></div></div>
+    <div class="labels"><div class="mode" id="mode">STANDBY</div><div class="desc" id="desc">Guardian core stable.</div></div>
+    <section class="flow">
+      <div class="steps"><div class="step active">RECEIVED</div><div class="step">ANALYSIS</div><div class="step">VERIFY</div><div class="step">RESULT</div></div>
+      <div id="decision">Awaiting command.</div>
+    </section>
+    <div class="buttons">
+      <button id="listen">LISTEN</button><button id="verify">VERIFY</button>
+      <button id="approve">APPROVE</button><button id="stop">CRITICAL STOP</button>
+    </div>
+  </main>
 </div>
-<div id="voiceMask"></div><canvas id="voice"></canvas><div id="glow"></div>
-<button class="tap core" id="core" aria-label="Voice input"></button><div class="toast" id="toast"></div>
-</div><script>
-(()=>{
-const particleRoot=document.getElementById('particles');
-if(particleRoot){
-  for(let i=0;i<46;i++){
-    const p=document.createElement('i');
-    p.className='ap'+(i%5===0?' v':'');
-    const a=Math.random()*Math.PI*2, rr=28+Math.random()*46;
-    p.style.left=(50+Math.cos(a)*rr/2)+'%';
-    p.style.top=(50+Math.sin(a)*rr/2)+'%';
-    p.style.setProperty('--dur',(2.6+Math.random()*4.2).toFixed(2)+'s');
-    p.style.setProperty('--delay',(-Math.random()*3.5).toFixed(2)+'s');
-    particleRoot.appendChild(p);
-  }
-}
-const c=document.getElementById('voice'),x=c.getContext('2d'),g=document.getElementById('glow'),t=document.getElementById('toast');
-let on=false,s=null,a=null,n=null,d=null,r=0,l=0,tt=0;
-function toast(m){clearTimeout(tt);t.textContent=m;t.classList.add('on');tt=setTimeout(()=>t.classList.remove('on'),1100)}
-function size(){const q=c.getBoundingClientRect(),p=Math.min(devicePixelRatio||1,2);c.width=q.width*p;c.height=q.height*p;x.setTransform(p,0,0,p,0,0)}
-function paintIdle(z=0){if(on)return;size();let w=c.clientWidth,h=c.clientHeight,m=h/2;x.clearRect(0,0,w,h);const bars=92,gap=w/bars;for(let i=0;i<bars;i++){const p=i/(bars-1),center=.28+.72*Math.sin(Math.PI*p),drift=Math.abs(Math.sin(z*.0026+i*.41)+Math.sin(z*.00135-i*.19))*.5,amp=1.6+center*(h*.22)*(0.28+drift*.72),rr=Math.round(16+p*155),gg=Math.round(196-p*86),bb=255;x.strokeStyle=`rgba(${rr},${gg},${bb},.86)`;x.lineWidth=Math.max(1,w/620);x.shadowColor=p>.72?'#7f45ff':'#18cfff';x.shadowBlur=3.2;const px=(i+.5)*gap;x.beginPath();x.moveTo(px,m-amp/2);x.lineTo(px,m+amp/2);x.stroke()}x.shadowBlur=0;r=requestAnimationFrame(paintIdle)}
-function paint(){if(!on||!n)return;size();n.getByteTimeDomainData(d);let w=c.clientWidth,h=c.clientHeight,m=h/2,sum=0;for(let v of d){v=(v-128)/128;sum+=v*v}l=l*.8+Math.sqrt(sum/d.length)*.2;let q=Math.min(1,l*7);x.clearRect(0,0,w,h);const bars=92,gap=w/bars;for(let i=0;i<bars;i++){const p=i/(bars-1),idx=Math.min(d.length-1,Math.floor(p*(d.length-1))),sample=Math.abs((d[idx]-128)/128),neighbor=Math.abs((d[Math.min(d.length-1,idx+2)]-128)/128),center=.25+.75*Math.sin(Math.PI*p),amp=2+(sample*.72+neighbor*.28)*(h*.78)*(0.55+q*.72)+center*q*(h*.08),rr=Math.round(10+p*175),gg=Math.round(205-p*95),bb=255;x.strokeStyle=`rgba(${rr},${gg},${bb},.96)`;x.lineWidth=Math.max(1,w/620)+q*.45;x.shadowColor=p>.72?'#8748ff':'#22d8ff';x.shadowBlur=4+q*8;const px=(i+.5)*gap;x.beginPath();x.moveTo(px,m-amp/2);x.lineTo(px,m+amp/2);x.stroke()}x.shadowBlur=0;g.style.opacity=.06+q*.42;g.style.transform=`translate(-50%,-50%) scale(${1+q*.04})`;r=requestAnimationFrame(paint)}
-async function start(){try{s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});a=new(window.AudioContext||window.webkitAudioContext)();await a.resume();n=a.createAnalyser();n.fftSize=512;n.smoothingTimeConstant=.72;d=new Uint8Array(n.fftSize);a.createMediaStreamSource(s).connect(n);on=true;document.body.classList.add('listening');cancelAnimationFrame(r);toast('VOICE CHANNEL · LIVE');paint()}catch(e){toast('MICROPHONE PERMISSION REQUIRED')}}
-async function stop(){on=false;document.body.classList.remove('listening');if(s)s.getTracks().forEach(v=>v.stop());s=null;if(a)try{await a.close()}catch(e){}a=n=d=null;l=0;g.style.opacity=.06;g.style.transform='translate(-50%,-50%) scale(1)';cancelAnimationFrame(r);toast('VOICE CHANNEL · STANDBY');paintIdle()}
-document.getElementById('core').onclick=()=>on?stop():start();document.addEventListener('visibilitychange',()=>{if(document.hidden&&on)stop()});addEventListener('resize',size);paintIdle();
-if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(v=>v.forEach(q=>q.unregister())).catch(()=>{});if('caches'in window)caches.keys().then(v=>Promise.all(v.map(q=>caches.delete(q)))).catch(()=>{});
-})();
-</script></body></html>
+<script>
+const stage=document.getElementById('stage'),mode=document.getElementById('mode'),desc=document.getElementById('desc'),scanMode=document.getElementById('scanMode'),decision=document.getElementById('decision'),badge=document.getElementById('badge'),steps=[...document.querySelectorAll('.step')],pf=document.getElementById('particles');
+for(let i=0;i<72;i++){const p=document.createElement('i');p.className='particle';const a=Math.random()*Math.PI*2,r=34+Math.random()*42;p.style.left=(50+Math.cos(a)*r/2)+'%';p.style.top=(50+Math.sin(a)*r/2)+'%';p.style.animationDelay=(Math.random()*2.5)+'s';p.style.animationDuration=(2.2+Math.random()*3.5)+'s';pf.appendChild(p)}
+function flow(n){steps.forEach((s,i)=>s.classList.toggle('active',i===n))}
+function state(c,m,d,s,n){stage.className='stage '+c;mode.textContent=m;desc.textContent=d;scanMode.textContent=s;flow(n);badge.textContent=c==='stopped'?'CORE LOCKED':'SYSTEM ONLINE'}
+listen.onclick=()=>{state('listening','LISTENING','Voice interface simulation active.','VOICE',1);decision.textContent='Awaiting spoken command.'}
+verify.onclick=()=>{state('verifying','VERIFYING','Evidence verification in progress.','DEEP',2);decision.textContent='Cross-checking evidence, policy and risk...';setTimeout(()=>{if(stage.classList.contains('verifying')){flow(3);decision.textContent='REQUEST_EVIDENCE — integrity evidence incomplete.'}},1800)}
+approve.onclick=()=>{state('approved','APPROVED','Verification result accepted for prototype.','CLEAR',3);decision.textContent='Execution remains simulated in V0.2.'}
+stop.onclick=()=>{state('stopped','CRITICAL STOP','All simulated authority locked.','LOCKED',3);decision.textContent='Manual release required.'}
+if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
+</body></html>
