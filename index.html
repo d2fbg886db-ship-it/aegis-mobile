@@ -9,18 +9,41 @@
 <meta name="apple-mobile-web-app-title" content="AEGIS">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>AEGIS Ver2 Restoration</title>
+<title>AEGIS Ver2 Fit Screen</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:#000;min-height:100%}
-body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-#app{width:100%;max-width:430px;margin:0 auto;background:#000}
-#baseline{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
+body{
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#app{
+  width:100vw;
+  height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-width:430px;
+  margin:0 auto;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+#baseline{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center center;
+  user-select:none;
+  -webkit-user-drag:none;
+}
 </style>
 </head>
 <body>
 <div id="app">
-  <img id="baseline" src="aegis-ver2-baseline.jpg?v=200" alt="AEGIS Ver2 visual baseline">
+  <img id="baseline" src="aegis-ver2-baseline.jpg?v=201" alt="AEGIS Ver2 visual baseline">
 </div>
 </body>
 </html>
