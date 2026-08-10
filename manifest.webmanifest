@@ -1,7 +1,7 @@
 {
-  "name": "AEGIS Ver2 iPhone 11 Pro Max Fullscreen",
+  "name": "AEGIS Ver2 iPhone 11 Pro Max Top Left Fix",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=212fs",
+  "start_url": "./index.html?v=213tl",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
