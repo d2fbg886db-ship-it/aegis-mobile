@@ -1,7 +1,7 @@
 {
-  "name": "AEGIS Mobile Master V1",
+  "name": "AEGIS Mobile V0.8",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=070",
+  "start_url": "./index.html?v=080",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",

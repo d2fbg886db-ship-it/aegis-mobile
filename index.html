@@ -2,20 +2,20 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="AEGIS">
-<link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><title>AEGIS</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><title>AEGIS Mobile V0.8</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:#000;min-height:100%;overflow-x:hidden}
-body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+body{padding:calc(env(safe-area-inset-top) + 10px) 0 env(safe-area-inset-bottom)}
 #app{position:relative;width:100%;max-width:430px;margin:auto;background:#000}
 #master{display:block;width:100%;height:auto;pointer-events:none;user-select:none}
-#voiceMask{position:absolute;left:2.5%;top:62.1%;width:95%;height:4.2%;background:#020711;z-index:4;pointer-events:none}
-#voice{position:absolute;left:2.5%;top:62.1%;width:95%;height:4.2%;z-index:5;pointer-events:none}
+#voiceMask{position:absolute;left:2.5%;top:61.25%;width:95%;height:3.45%;background:rgba(2,7,17,.94);z-index:4;pointer-events:none}
+#voice{position:absolute;left:2.5%;top:61.25%;width:95%;height:3.45%;z-index:5;pointer-events:none}
 #glow{position:absolute;left:50%;top:37.8%;width:36%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
 background:radial-gradient(circle,rgba(50,220,255,.24),rgba(15,100,255,.08) 42%,transparent 72%);filter:blur(11px);mix-blend-mode:screen;opacity:.06;z-index:3;pointer-events:none}
 .tap{position:absolute;border:0;background:transparent;z-index:8}.core{left:28%;top:29%;width:44%;height:23%}
 .toast{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);padding:7px 11px;border:1px solid rgba(80,220,255,.28);border-radius:999px;background:rgba(0,5,12,.9);color:#7feaff;font:11px -apple-system,sans-serif;opacity:0;transition:.15s;z-index:9;white-space:nowrap}.toast.on{opacity:1}
 </style></head><body><div id="app">
-<img id="master" src="aegis-mobile-master-v1.jpg?v=070" alt="AEGIS Guardian AI">
+<img id="master" src="aegis-mobile-master-v1.jpg?v=080" alt="AEGIS Guardian AI">
 <div id="voiceMask"></div><canvas id="voice"></canvas><div id="glow"></div>
 <button class="tap core" id="core" aria-label="Voice input"></button><div class="toast" id="toast"></div>
 </div><script>
