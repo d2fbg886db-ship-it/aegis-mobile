@@ -1,7 +1,7 @@
 {
-  "name": "AEGIS Ver2 iPhone 11 Pro Max",
+  "name": "AEGIS Ver2 iPhone 11 Pro Max Fullscreen",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=211pm",
+  "start_url": "./index.html?v=212fs",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
