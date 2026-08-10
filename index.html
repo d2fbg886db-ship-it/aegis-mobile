@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="AEGIS">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>AEGIS Ver2 — iPhone 11 Pro Max Top Left Fix</title>
+<title>AEGIS Ver2 — iPhone 11 Pro Max Top Left Scale Fix</title>
 <style>
 *{
   box-sizing:border-box;
@@ -62,27 +62,37 @@ body{
   -webkit-user-drag:none;
 }
 
-/* Ver2.1: move ONLY the top-left AEGIS/GUARDIAN AI block down */
+/* Ver2.2: keep original position; scale ONLY AEGIS / GUARDIAN AI smaller */
 #topLeftMask{
   position:absolute;
   left:0;
   top:0;
-  width:42%;
-  height:12.3%;
+  width:43%;
+  height:12.5%;
   background:#000;
   z-index:2;
+  pointer-events:none;
+}
+#topLeftCrop{
+  position:absolute;
+  left:0;
+  top:0;
+  width:43%;
+  height:12.5%;
+  overflow:hidden;
+  z-index:3;
   pointer-events:none;
 }
 #topLeftClone{
   position:absolute;
   left:0;
-  top:18px;
+  top:0;
   width:100vw;
   height:100dvh;
   object-fit:fill;
   object-position:center center;
-  clip-path:inset(0 58% 87.7% 0);
-  z-index:3;
+  transform-origin:0 0;
+  transform:scale(.88);
   pointer-events:none;
   user-select:none;
   -webkit-user-drag:none;
@@ -95,12 +105,14 @@ body{
   <div id="safe-frame">
     <div id="device-frame">
       <img id="baseline"
-           src="aegis-ver2-iphone11promax-1242x2688.jpg?v=213tl"
+           src="aegis-ver2-iphone11promax-1242x2688.jpg?v=214sc"
            alt="AEGIS Ver2">
       <div id="topLeftMask"></div>
-      <img id="topLeftClone"
-           src="aegis-ver2-iphone11promax-1242x2688.jpg?v=213tl"
-           alt="">
+      <div id="topLeftCrop">
+        <img id="topLeftClone"
+             src="aegis-ver2-iphone11promax-1242x2688.jpg?v=214sc"
+             alt="">
+      </div>
     </div>
   </div>
 </div>
