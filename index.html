@@ -2,7 +2,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#000"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="AEGIS">
-<link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><title>AEGIS Mobile V0.9</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><title>AEGIS Mobile V1.0</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;background:#000;min-height:100%;overflow-x:hidden}
 body{padding:calc(env(safe-area-inset-top) + 10px) 0 env(safe-area-inset-bottom)}
@@ -14,19 +14,81 @@ body{padding:calc(env(safe-area-inset-top) + 10px) 0 env(safe-area-inset-bottom)
 background:radial-gradient(circle,rgba(50,220,255,.24),rgba(15,100,255,.08) 42%,transparent 72%);filter:blur(11px);mix-blend-mode:screen;opacity:.06;z-index:3;pointer-events:none}
 .tap{position:absolute;border:0;background:transparent;z-index:8}.core{left:28%;top:29%;width:44%;height:23%}
 .toast{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);padding:7px 11px;border:1px solid rgba(80,220,255,.28);border-radius:999px;background:rgba(0,5,12,.9);color:#7feaff;font:11px -apple-system,sans-serif;opacity:0;transition:.15s;z-index:9;white-space:nowrap}.toast.on{opacity:1}
+
+/* === AEGIS V1.0 transparent animation integration === */
+#animLayer{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+#coreAnim{position:absolute;left:50%;top:37.8%;width:46%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none}
+.anim-ring{position:absolute;border-radius:50%;border:1px solid rgba(73,221,255,.42);box-shadow:0 0 7px rgba(45,207,255,.18);mix-blend-mode:screen}
+.ar1{inset:4%;border-style:dashed;animation:aSpin 11s linear infinite}
+.ar2{inset:12%;border-width:1.2px;border-left-color:transparent;border-right-color:transparent;animation:aSpinR 7.8s linear infinite}
+.ar3{inset:21%;border-style:dotted;opacity:.72;animation:aSpin 5.4s linear infinite}
+.ar4{inset:30%;border-width:1.4px;border-top-color:transparent;border-bottom-color:rgba(168,88,255,.42);animation:aSpinR 3.9s linear infinite}
+.anim-arc{position:absolute;border-radius:50%;border:1.5px solid transparent;border-top-color:rgba(78,230,255,.75);border-right-color:rgba(97,112,255,.58);filter:drop-shadow(0 0 4px rgba(70,220,255,.42));mix-blend-mode:screen}
+.aa1{inset:8%;animation:aSpin 6.2s linear infinite}.aa2{inset:25%;animation:aSpinR 4.4s linear infinite}
+#coreBreath{position:absolute;inset:34%;border-radius:50%;background:radial-gradient(circle,rgba(87,234,255,.24),rgba(33,120,255,.08) 48%,transparent 72%);filter:blur(6px);mix-blend-mode:screen;animation:aBreath 2.8s ease-in-out infinite}
+#verticalBeam{position:absolute;left:50%;top:8%;bottom:7%;width:1px;transform:translateX(-50%);background:linear-gradient(transparent,rgba(81,225,255,.08) 18%,rgba(83,230,255,.56) 48%,rgba(160,77,255,.32) 68%,transparent);box-shadow:0 0 8px rgba(70,220,255,.34);opacity:.42;animation:aBeam 2.9s ease-in-out infinite}
+#scanLine{position:absolute;left:19%;right:19%;height:1px;background:linear-gradient(90deg,transparent,rgba(77,227,255,.72),transparent);box-shadow:0 0 7px rgba(67,220,255,.45);opacity:.0;animation:aScan 4.6s ease-in-out infinite}
+#particles{position:absolute;inset:0}
+.ap{position:absolute;width:2px;height:2px;border-radius:50%;background:rgba(92,228,255,.9);box-shadow:0 0 5px rgba(75,220,255,.7);opacity:.55;animation:aDrift var(--dur) ease-in-out var(--delay) infinite alternate}
+.ap.v{background:rgba(174,89,255,.88);box-shadow:0 0 5px rgba(170,75,255,.65)}
+#modePulse{position:absolute;left:50%;top:58.1%;width:36%;height:2.3%;transform:translateX(-50%);border-radius:999px;background:radial-gradient(ellipse,rgba(56,216,255,.10),transparent 70%);filter:blur(5px);opacity:.35;animation:aMode 2.5s ease-in-out infinite}
+body.listening #coreAnim .anim-ring{animation-duration:2.8s}
+body.listening #coreAnim .ar2{animation-duration:2.1s}
+body.listening #coreAnim .ar3{animation-duration:1.7s}
+body.listening #coreAnim .ar4{animation-duration:1.3s}
+body.listening #coreBreath{animation-duration:.85s}
+body.listening #verticalBeam{opacity:.72}
+@keyframes aSpin{to{transform:rotate(360deg)}}@keyframes aSpinR{to{transform:rotate(-360deg)}}
+@keyframes aBreath{0%,100%{transform:scale(.92);opacity:.42}50%{transform:scale(1.08);opacity:.88}}
+@keyframes aBeam{0%,100%{opacity:.22}50%{opacity:.62}}
+@keyframes aScan{0%{top:22%;opacity:0}10%{opacity:.55}82%{opacity:.48}100%{top:79%;opacity:0}}
+@keyframes aDrift{0%{transform:translate3d(-3px,-5px,0) scale(.7);opacity:.25}100%{transform:translate3d(5px,8px,0) scale(1.35);opacity:.9}}
+@keyframes aMode{0%,100%{opacity:.18;transform:translateX(-50%) scaleX(.88)}50%{opacity:.48;transform:translateX(-50%) scaleX(1.08)}}
+@media (prefers-reduced-motion:reduce){.anim-ring,.anim-arc,#coreBreath,#verticalBeam,#scanLine,.ap,#modePulse{animation:none!important}}
+
 </style></head><body><div id="app">
-<img id="master" src="aegis-mobile-master-v1.jpg?v=090" alt="AEGIS Guardian AI">
+<img id="master" src="aegis-mobile-master-v1.jpg?v=100" alt="AEGIS Guardian AI">
+
+<div id="animLayer" aria-hidden="true">
+  <div id="verticalBeam"></div>
+  <div id="scanLine"></div>
+  <div id="modePulse"></div>
+  <div id="coreAnim">
+    <div class="anim-ring ar1"></div>
+    <div class="anim-ring ar2"></div>
+    <div class="anim-ring ar3"></div>
+    <div class="anim-ring ar4"></div>
+    <div class="anim-arc aa1"></div>
+    <div class="anim-arc aa2"></div>
+    <div id="coreBreath"></div>
+    <div id="particles"></div>
+  </div>
+</div>
 <div id="voiceMask"></div><canvas id="voice"></canvas><div id="glow"></div>
 <button class="tap core" id="core" aria-label="Voice input"></button><div class="toast" id="toast"></div>
 </div><script>
-(()=>{const c=document.getElementById('voice'),x=c.getContext('2d'),g=document.getElementById('glow'),t=document.getElementById('toast');
+(()=>{
+const particleRoot=document.getElementById('particles');
+if(particleRoot){
+  for(let i=0;i<46;i++){
+    const p=document.createElement('i');
+    p.className='ap'+(i%5===0?' v':'');
+    const a=Math.random()*Math.PI*2, rr=28+Math.random()*46;
+    p.style.left=(50+Math.cos(a)*rr/2)+'%';
+    p.style.top=(50+Math.sin(a)*rr/2)+'%';
+    p.style.setProperty('--dur',(2.6+Math.random()*4.2).toFixed(2)+'s');
+    p.style.setProperty('--delay',(-Math.random()*3.5).toFixed(2)+'s');
+    particleRoot.appendChild(p);
+  }
+}
+const c=document.getElementById('voice'),x=c.getContext('2d'),g=document.getElementById('glow'),t=document.getElementById('toast');
 let on=false,s=null,a=null,n=null,d=null,r=0,l=0,tt=0;
 function toast(m){clearTimeout(tt);t.textContent=m;t.classList.add('on');tt=setTimeout(()=>t.classList.remove('on'),1100)}
 function size(){const q=c.getBoundingClientRect(),p=Math.min(devicePixelRatio||1,2);c.width=q.width*p;c.height=q.height*p;x.setTransform(p,0,0,p,0,0)}
 function paintIdle(z=0){if(on)return;size();let w=c.clientWidth,h=c.clientHeight,m=h/2;x.clearRect(0,0,w,h);const bars=92,gap=w/bars;for(let i=0;i<bars;i++){const p=i/(bars-1),center=.28+.72*Math.sin(Math.PI*p),drift=Math.abs(Math.sin(z*.0026+i*.41)+Math.sin(z*.00135-i*.19))*.5,amp=1.6+center*(h*.22)*(0.28+drift*.72),rr=Math.round(16+p*155),gg=Math.round(196-p*86),bb=255;x.strokeStyle=`rgba(${rr},${gg},${bb},.86)`;x.lineWidth=Math.max(1,w/620);x.shadowColor=p>.72?'#7f45ff':'#18cfff';x.shadowBlur=3.2;const px=(i+.5)*gap;x.beginPath();x.moveTo(px,m-amp/2);x.lineTo(px,m+amp/2);x.stroke()}x.shadowBlur=0;r=requestAnimationFrame(paintIdle)}
 function paint(){if(!on||!n)return;size();n.getByteTimeDomainData(d);let w=c.clientWidth,h=c.clientHeight,m=h/2,sum=0;for(let v of d){v=(v-128)/128;sum+=v*v}l=l*.8+Math.sqrt(sum/d.length)*.2;let q=Math.min(1,l*7);x.clearRect(0,0,w,h);const bars=92,gap=w/bars;for(let i=0;i<bars;i++){const p=i/(bars-1),idx=Math.min(d.length-1,Math.floor(p*(d.length-1))),sample=Math.abs((d[idx]-128)/128),neighbor=Math.abs((d[Math.min(d.length-1,idx+2)]-128)/128),center=.25+.75*Math.sin(Math.PI*p),amp=2+(sample*.72+neighbor*.28)*(h*.78)*(0.55+q*.72)+center*q*(h*.08),rr=Math.round(10+p*175),gg=Math.round(205-p*95),bb=255;x.strokeStyle=`rgba(${rr},${gg},${bb},.96)`;x.lineWidth=Math.max(1,w/620)+q*.45;x.shadowColor=p>.72?'#8748ff':'#22d8ff';x.shadowBlur=4+q*8;const px=(i+.5)*gap;x.beginPath();x.moveTo(px,m-amp/2);x.lineTo(px,m+amp/2);x.stroke()}x.shadowBlur=0;g.style.opacity=.06+q*.42;g.style.transform=`translate(-50%,-50%) scale(${1+q*.04})`;r=requestAnimationFrame(paint)}
-async function start(){try{s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});a=new(window.AudioContext||window.webkitAudioContext)();await a.resume();n=a.createAnalyser();n.fftSize=512;n.smoothingTimeConstant=.72;d=new Uint8Array(n.fftSize);a.createMediaStreamSource(s).connect(n);on=true;cancelAnimationFrame(r);toast('VOICE CHANNEL · LIVE');paint()}catch(e){toast('MICROPHONE PERMISSION REQUIRED')}}
-async function stop(){on=false;if(s)s.getTracks().forEach(v=>v.stop());s=null;if(a)try{await a.close()}catch(e){}a=n=d=null;l=0;g.style.opacity=.06;g.style.transform='translate(-50%,-50%) scale(1)';cancelAnimationFrame(r);toast('VOICE CHANNEL · STANDBY');paintIdle()}
+async function start(){try{s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});a=new(window.AudioContext||window.webkitAudioContext)();await a.resume();n=a.createAnalyser();n.fftSize=512;n.smoothingTimeConstant=.72;d=new Uint8Array(n.fftSize);a.createMediaStreamSource(s).connect(n);on=true;document.body.classList.add('listening');cancelAnimationFrame(r);toast('VOICE CHANNEL · LIVE');paint()}catch(e){toast('MICROPHONE PERMISSION REQUIRED')}}
+async function stop(){on=false;document.body.classList.remove('listening');if(s)s.getTracks().forEach(v=>v.stop());s=null;if(a)try{await a.close()}catch(e){}a=n=d=null;l=0;g.style.opacity=.06;g.style.transform='translate(-50%,-50%) scale(1)';cancelAnimationFrame(r);toast('VOICE CHANNEL · STANDBY');paintIdle()}
 document.getElementById('core').onclick=()=>on?stop():start();document.addEventListener('visibilitychange',()=>{if(document.hidden&&on)stop()});addEventListener('resize',size);paintIdle();
 if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(v=>v.forEach(q=>q.unregister())).catch(()=>{});if('caches'in window)caches.keys().then(v=>Promise.all(v.map(q=>caches.delete(q)))).catch(()=>{});
 })();
