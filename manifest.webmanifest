@@ -1,9 +1,9 @@
 {
   "id": "./?v=0.3.0",
-  "name": "AEGIS Guardian AI V0.3",
+  "name": "AEGIS Mobile V0.4",
   "short_name": "AEGIS",
   "description": "AEGIS Guardian AI mobile visual prototype",
-  "start_url": "./?v=0.3.0",
+  "start_url": "./index.html?v=040",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

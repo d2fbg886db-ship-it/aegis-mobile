@@ -1,5 +1,5 @@
 const CACHE='aegis-v0.3.0-20260810';
-const CORE=['./','./?v=0.3.0','./index.html','./manifest.webmanifest','./aegis-visual-baseline-v1.webp','./apple-touch-icon.png','./icon-192.png','./icon-512.png','./splash-1242x2688.png'];
+const CORE=['./','./?v=0.3.0','./index.html','./manifest.webmanifest','./aegis-visual-baseline-v1.png','./apple-touch-icon.png','./icon-192.png','./icon-512.png','./splash-1242x2688.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',event=>{

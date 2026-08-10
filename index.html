@@ -9,9 +9,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="AEGIS">
   <meta name="format-detection" content="telephone=no">
-  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=030">
-  <link rel="manifest" href="./manifest.webmanifest?v=030">
-  <link rel="apple-touch-startup-image" href="./splash-1242x2688.png?v=030" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png?v=040">
+  <link rel="manifest" href="./manifest.webmanifest?v=040">
+  <link rel="apple-touch-startup-image" href="./splash-1242x2688.png?v=040" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
   <title>AEGIS Guardian AI</title>
   <style>
     :root {
@@ -94,7 +94,7 @@
 <body>
 <div id="viewport">
   <main id="screen" class="state-request" aria-label="AEGIS Guardian AI interface">
-    <img id="baseline" src="./aegis-visual-baseline-v1.webp?v=030" alt="">
+    <img id="baseline" src="./aegis-visual-baseline-v1.png?v=040" alt="">
     <canvas id="particleCanvas"></canvas>
     <div class="vertical-beam"></div>
     <div class="scan-line"></div>
@@ -161,10 +161,12 @@
   const detailsBackdrop=document.getElementById('detailsBackdrop');
   const settingsBackdrop=document.getElementById('settingsBackdrop');
   let state='request', listening=false, stopped=false, toastTimer=0, animationId=0;
+  let micStream=null, audioCtx=null, analyser=null, audioData=null, micLevel=0;
+  const coreFx=document.querySelector('.core-fx');
   const particles=[];
 
   function fit(){
-    const vw=window.innerWidth, vh=window.innerHeight, ratio=853/1844;
+    const vw=window.innerWidth, vh=window.innerHeight, ratio=852/1846;
     let w,h;
     if(vw/vh>ratio){h=vh;w=h*ratio}else{w=vw;h=w/ratio}
     screen.style.width=w+'px';screen.style.height=h+'px';
@@ -200,14 +202,48 @@
     const wdpr=+waveCanvas.dataset.dpr||1, ww=waveCanvas.width, wh=waveCanvas.height, wx=waveCanvas.getContext('2d');
     wx.clearRect(0,0,ww,wh);wx.save();wx.scale(wdpr,wdpr);
     const W=ww/wdpr,H=wh/wdpr,mid=H/2,bars=84;
+
+    let liveSamples=null;
+    if(listening && analyser && audioData){
+      analyser.getByteTimeDomainData(audioData);
+      liveSamples=audioData;
+      let sum=0;
+      for(let i=0;i<audioData.length;i++){
+        const v=(audioData[i]-128)/128;
+        sum+=v*v;
+      }
+      const rms=Math.sqrt(sum/audioData.length);
+      micLevel=micLevel*.82+rms*.18;
+    }else{
+      micLevel*=.9;
+    }
+
     for(let i=0;i<bars;i++){
-      const x=(i/(bars-1))*W;const centerWeight=.25+.75*Math.sin(Math.PI*i/(bars-1));
-      const amp=(listening?1.0:.58)*(2+centerWeight*(H*.32))*(.36+.64*Math.abs(Math.sin(t*.004+i*.47)+Math.sin(t*.0021-i*.22))*.5);
-      const mix=i/(bars-1);const r=Math.round(35+mix*98),g=Math.round(204-mix*91),b=255;
-      wx.strokeStyle=`rgba(${r},${g},${b},.86)`;wx.lineWidth=Math.max(1,W/560);wx.shadowColor=mix>.7?'#6a4cff':'#16cfff';wx.shadowBlur=4;
+      const x=(i/(bars-1))*W;
+      const centerWeight=.25+.75*Math.sin(Math.PI*i/(bars-1));
+      let amp;
+      if(liveSamples){
+        const idx=Math.min(liveSamples.length-1,Math.floor((i/(bars-1))*(liveSamples.length-1)));
+        const sample=Math.abs((liveSamples[idx]-128)/128);
+        const voiceBoost=Math.min(1, micLevel*7);
+        amp=2 + sample*(H*.78)*(0.55+voiceBoost*.8) + centerWeight*voiceBoost*(H*.10);
+      }else{
+        amp=.58*(2+centerWeight*(H*.32))*(.36+.64*Math.abs(Math.sin(t*.004+i*.47)+Math.sin(t*.0021-i*.22))*.5);
+      }
+      const mix=i/(bars-1),r=Math.round(35+mix*98),g=Math.round(204-mix*91),b=255;
+      wx.strokeStyle=`rgba(${r},${g},${b},.9)`;
+      wx.lineWidth=Math.max(1,W/560)+(listening?Math.min(1.1,micLevel*5):0);
+      wx.shadowColor=mix>.7?'#6a4cff':'#16cfff';
+      wx.shadowBlur=listening?5+Math.min(10,micLevel*45):4;
       wx.beginPath();wx.moveTo(x,mid-amp/2);wx.lineTo(x,mid+amp/2);wx.stroke();
     }
     wx.restore();
+
+    if(coreFx){
+      const v=Math.min(1,micLevel*7);
+      coreFx.style.filter=`drop-shadow(0 0 ${(.7+v*1.7).toFixed(2)}em rgba(30,205,255,${(.24+v*.45).toFixed(2)}))`;
+      coreFx.style.opacity=(.96+v*.04).toFixed(2);
+    }
     animationId=requestAnimationFrame(render);
   }
   function showToast(message,tone=''){
@@ -226,14 +262,57 @@
       decisionTitle.textContent='REQUEST_EVIDENCE';decisionTitle.style.color='#31b8ff';decisionReason.textContent='Reason: Evidence integrity is incomplete.';showToast('Additional evidence requested');
     }
   }
-  function toggleListening(){
+  async function startMicrophone(){
+    if(stopped)return false;
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      showToast('MICROPHONE NOT SUPPORTED','red');
+      return false;
+    }
+    try{
+      micStream=await navigator.mediaDevices.getUserMedia({
+        audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
+      });
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      await audioCtx.resume();
+      analyser=audioCtx.createAnalyser();
+      analyser.fftSize=512;
+      analyser.smoothingTimeConstant=.72;
+      audioData=new Uint8Array(analyser.fftSize);
+      const src=audioCtx.createMediaStreamSource(micStream);
+      src.connect(analyser);
+      return true;
+    }catch(e){
+      showToast('MICROPHONE PERMISSION REQUIRED','red');
+      return false;
+    }
+  }
+  async function stopMicrophone(){
+    if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}
+    if(audioCtx){try{await audioCtx.close()}catch(e){}audioCtx=null;}
+    analyser=null;audioData=null;micLevel=0;
+    if(coreFx){coreFx.style.filter='';coreFx.style.opacity='';}
+  }
+  async function toggleListening(){
     if(stopped)return;
-    listening=!listening;screen.classList.toggle('state-listening',listening);
-    modeTitle.textContent=listening?'LISTENING':'VERIFYING';modeSub.textContent=listening?'Secure voice channel active':'Evidence Verification in Progress';
-    showToast(listening?'VOICE CHANNEL · SIMULATION ACTIVE':'VOICE CHANNEL · STANDBY');
+    if(!listening){
+      const ok=await startMicrophone();
+      if(!ok)return;
+      listening=true;
+      screen.classList.add('state-listening');
+      modeTitle.textContent='LISTENING';
+      modeSub.textContent='Secure voice channel active';
+      showToast('VOICE CHANNEL · LIVE MICROPHONE ACTIVE','green');
+    }else{
+      listening=false;
+      screen.classList.remove('state-listening');
+      await stopMicrophone();
+      modeTitle.textContent='VERIFYING';
+      modeSub.textContent='Evidence Verification in Progress';
+      showToast('VOICE CHANNEL · STANDBY');
+    }
   }
   function stop(){
-    stopped=true;listening=false;screen.classList.remove('state-listening','state-approved','state-rejected','state-request');screen.classList.add('state-stopped');
+    stopMicrophone();stopped=true;listening=false;screen.classList.remove('state-listening','state-approved','state-rejected','state-request');screen.classList.add('state-stopped');
     decisionTitle.textContent='CRITICAL_STOP';decisionTitle.style.color='#ff4f61';decisionReason.textContent='All simulated authority is locked. Reload to release.';glow.className='button-glow';settingsBackdrop.classList.remove('open');showToast('CRITICAL STOP · CORE LOCKED','red');
   }
   document.getElementById('approveHit').onclick=()=>setDecision('approve');
@@ -249,9 +328,16 @@
   document.getElementById('navJarvis').onclick=()=>showToast('JARVIS LINK · SIMULATED');
   document.getElementById('navMemory').onclick=()=>showToast('MEMORY · ISOLATED / VERIFIED');
   window.addEventListener('resize',fit,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(fit,120),{passive:true});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(animationId)}else{animationId=requestAnimationFrame(render)}});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){
+      cancelAnimationFrame(animationId);
+      if(listening){listening=false;screen.classList.remove('state-listening');stopMicrophone();modeTitle.textContent='VERIFYING';modeSub.textContent='Evidence Verification in Progress';}
+    }else{
+      animationId=requestAnimationFrame(render);
+    }
+  });
   fit();animationId=requestAnimationFrame(render);
-  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=030',{scope:'./'}).then(reg=>reg.update()).catch(()=>{}));}
+  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=040',{scope:'./'}).then(reg=>reg.update()).catch(()=>{}));}
   window.AEGIS={version:VERSION};
 })();
 </script>
