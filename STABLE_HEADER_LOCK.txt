@@ -1,0 +1,7 @@
+AEGIS VER2 STABLE HEADER
+- Rebuilt from the known-good fullscreen Ver2 base.
+- Removed all prior header-layer experiments.
+- Only the original AEGIS/GUARDIAN area is replaced.
+- Background repair uses a neutral generated dark field, not copied HUD texture.
+- SYSTEM ONLINE / LINK:JARVIS / gear / CORE / all panels remain from the untouched Ver2 source.
+- No animation, waveform, clone, or extra UI layers.

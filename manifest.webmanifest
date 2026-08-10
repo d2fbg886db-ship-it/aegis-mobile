@@ -1,11 +1,11 @@
 {
-  "name": "AEGIS Ver2 Header Transparent",
+  "name": "AEGIS Ver2 Stable Header",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=221",
+  "start_url": "./index.html?v=230",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#000",
+  "theme_color": "#000",
   "icons": [
     {
       "src": "icon-192.png",
