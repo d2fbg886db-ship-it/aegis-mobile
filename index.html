@@ -3,208 +3,220 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#00040a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="AEGIS">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>AEGIS Ver2 Safe Header</title>
+<title>AEGIS Balanced CG v0.1</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}
+html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
 body{position:fixed;inset:0}
 #app{position:fixed;inset:0;width:100vw;height:100dvh;background:#000;overflow:hidden}
-#ui{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center center;user-select:none;-webkit-user-drag:none}
+#visual{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;user-select:none;-webkit-user-drag:none}
 
-#cgLayer{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
-#coreFx{position:absolute;left:50%;top:39.3%;width:53%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;isolation:isolate}
-.cg-ring,.cg-arc,.cg-core-glow,.cg-scan,.cg-particle{position:absolute}
-.cg-ring{border-radius:50%;border:1px solid rgba(74,225,255,.33);box-shadow:0 0 8px rgba(50,215,255,.16),inset 0 0 8px rgba(50,215,255,.08);mix-blend-mode:screen}
-.ring-outer{inset:3%;border-style:dashed;animation:spin 12s linear infinite}
-.ring-mid{inset:13%;border-left-color:transparent;border-right-color:transparent;animation:spinR 8s linear infinite}
-.ring-inner{inset:24%;border-style:dotted;animation:spin 5.5s linear infinite}
-.cg-arc{border-radius:50%;border:1.6px solid transparent;border-top-color:rgba(81,231,255,.63);border-right-color:rgba(118,88,255,.48);filter:drop-shadow(0 0 5px rgba(76,220,255,.38));mix-blend-mode:screen}
-.arc-a{inset:8%;animation:spin 6.4s linear infinite}.arc-b{inset:28%;animation:spinR 4.2s linear infinite}
-.cg-core-glow{inset:35%;border-radius:50%;background:radial-gradient(circle,rgba(88,236,255,.26),rgba(26,118,255,.08) 50%,transparent 72%);filter:blur(6px);mix-blend-mode:screen;animation:breath 2.8s ease-in-out infinite}
-.cg-scan{left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(77,225,255,.58),transparent);box-shadow:0 0 6px rgba(77,225,255,.35);opacity:0}
-.cg-particle{width:2px;height:2px;border-radius:50%;background:rgba(95,231,255,.84);box-shadow:0 0 5px rgba(80,225,255,.62);animation:drift var(--dur) ease-in-out var(--delay) infinite alternate}
-.cg-particle.violet{background:rgba(181,91,255,.78);box-shadow:0 0 5px rgba(173,76,255,.58)}
-#app[data-state="RECEIVED"] .ring-mid,#app[data-state="RECEIVED"] .ring-inner,#app[data-state="RECEIVED"] .arc-a,#app[data-state="RECEIVED"] .arc-b{animation-play-state:paused;opacity:.28}
-#app[data-state="ANALYSIS"] .ring-outer{animation-duration:7s}#app[data-state="ANALYSIS"] .ring-mid{animation-duration:4.8s}#app[data-state="ANALYSIS"] .ring-inner{animation-duration:3.5s}
-#app[data-state="VERIFYING"] .ring-outer{animation-duration:4.6s}#app[data-state="VERIFYING"] .ring-mid{animation-duration:3s}#app[data-state="VERIFYING"] .ring-inner{animation-duration:2.2s}#app[data-state="VERIFYING"] .arc-a{animation-duration:2.6s}#app[data-state="VERIFYING"] .arc-b{animation-duration:1.8s}#app[data-state="VERIFYING"] .cg-scan{animation:scan 2.7s ease-in-out infinite}#app[data-state="VERIFYING"] .cg-core-glow{animation-duration:1.55s}
-#app[data-state="RESULT"] .ring-outer,#app[data-state="RESULT"] .ring-mid,#app[data-state="RESULT"] .ring-inner{animation-duration:14s}#app[data-state="RESULT"] .arc-a,#app[data-state="RESULT"] .arc-b{animation-duration:10s;opacity:.36}
-#app[data-state="DECISION"] .ring-outer,#app[data-state="DECISION"] .ring-mid,#app[data-state="DECISION"] .ring-inner,#app[data-state="DECISION"] .arc-a,#app[data-state="DECISION"] .arc-b{animation-play-state:paused}
-#statePanel{position:absolute;left:50%;bottom:1.4%;transform:translateX(-50%);z-index:3;display:flex;gap:4px;width:92%;justify-content:center}
-#statePanel button{flex:1;padding:7px 3px;border:1px solid rgba(70,210,255,.18);border-radius:8px;background:rgba(0,5,12,.72);color:rgba(185,235,255,.62);font-size:8px}
-#statePanel button.active{border-color:rgba(86,228,255,.54);color:#dffaff;background:rgba(11,43,64,.72)}
-@keyframes spin{to{transform:rotate(360deg)}}@keyframes spinR{to{transform:rotate(-360deg)}}@keyframes breath{0%,100%{transform:scale(.93);opacity:.32}50%{transform:scale(1.07);opacity:.72}}@keyframes scan{0%{top:20%;opacity:0}12%{opacity:.55}82%{opacity:.48}100%{top:80%;opacity:0}}@keyframes drift{0%{transform:translate3d(-3px,-4px,0) scale(.72);opacity:.22}100%{transform:translate3d(5px,8px,0) scale(1.3);opacity:.88}}
+/* === CG motion container: central ring area ONLY === */
+#cg{
+  position:absolute;
+  left:49.05%;
+  top:30.55%;
+  width:78.5%;
+  aspect-ratio:1 / 1;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  z-index:2;
+  overflow:visible;
+}
 
-
-/* ===== v0.2 depth refinement: overlay-only ===== */
-#coreFx{
-  width:50.5%;
-  perspective:700px;
-  filter:drop-shadow(0 0 10px rgba(36,182,255,.08));
-}
-.cg-ring{
-  border-color:rgba(93,225,255,.20);
-  box-shadow:0 0 5px rgba(52,203,255,.09),inset 0 0 5px rgba(52,203,255,.045);
-}
-.ring-outer{
-  inset:2.5%;
-  border-style:solid;
-  border-top-color:rgba(83,229,255,.42);
-  border-right-color:rgba(83,229,255,.10);
-  border-bottom-color:rgba(119,84,255,.22);
-  border-left-color:rgba(83,229,255,.08);
-}
-.ring-mid{
-  inset:13.5%;
-  border-style:dashed;
-  opacity:.78;
-}
-.ring-inner{
-  inset:25.5%;
-  border-style:solid;
-  border-top-color:rgba(77,226,255,.44);
-  border-right-color:transparent;
-  border-bottom-color:rgba(176,82,255,.18);
-  border-left-color:transparent;
-  opacity:.75;
-}
-.arc-a{
-  inset:8.5%;
-  border-top-color:rgba(86,229,255,.55);
-  border-right-color:rgba(105,104,255,.20);
-  border-bottom-color:rgba(163,75,255,.13);
-  opacity:.85;
-}
-.arc-b{
-  inset:29.5%;
-  border-top-color:rgba(82,233,255,.62);
-  border-left-color:rgba(179,78,255,.20);
-  border-right-color:transparent;
-  opacity:.78;
-}
-.cg-core-glow{
-  inset:38%;
-  background:
-    radial-gradient(circle at 50% 45%,
-      rgba(114,241,255,.25) 0,
-      rgba(62,187,255,.13) 28%,
-      rgba(42,109,255,.05) 50%,
-      transparent 72%);
-  filter:blur(8px);
-}
-#coreFx:before,#coreFx:after{
-  content:"";
+/* Core logo/text forbidden zone.
+   Nothing animated may enter inside this circle. */
+#coreGuard{
   position:absolute;
   left:50%;
   top:50%;
+  width:25%;
+  aspect-ratio:1;
   transform:translate(-50%,-50%);
   border-radius:50%;
   pointer-events:none;
+}
+
+/* Rings begin outside the guard. */
+.ring{
+  position:absolute;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
   mix-blend-mode:screen;
+  pointer-events:none;
 }
-#coreFx:before{
-  width:74%;
-  height:27%;
-  border:1px solid rgba(81,229,255,.13);
-  filter:blur(.2px);
-  animation:haloTilt 5.8s linear infinite;
+.r1{
+  width:36%;aspect-ratio:1;
+  border:1px dashed rgba(60,218,255,.22);
+  animation:spin 12s linear infinite;
 }
-#coreFx:after{
-  width:49%;
-  height:17%;
-  border:1px solid rgba(176,81,255,.11);
-  animation:haloTiltR 4.4s linear infinite;
+.r2{
+  width:48%;aspect-ratio:1;
+  border:1px solid rgba(70,190,255,.14);
+  border-top-color:rgba(78,229,255,.38);
+  border-right-color:rgba(118,87,255,.10);
+  border-bottom-color:rgba(160,83,255,.22);
+  animation:spinR 17s linear infinite;
 }
-.cg-particle{
-  width:1.6px;height:1.6px;
-  opacity:.42;
+.r3{
+  width:61%;aspect-ratio:1;
+  border:1px dashed rgba(80,207,255,.18);
+  animation:spin 21s linear infinite;
 }
-.cg-particle.violet{opacity:.34}
-.cg-scan{
-  left:19%;right:19%;
-  background:linear-gradient(90deg,transparent,rgba(77,229,255,.42),transparent);
-  box-shadow:0 0 4px rgba(77,225,255,.22);
-}
-
-/* slower, smoother baseline movement */
-#app[data-state="RECEIVED"] .ring-outer{animation-duration:14s}
-#app[data-state="ANALYSIS"] .ring-outer{animation-duration:9.5s}
-#app[data-state="ANALYSIS"] .ring-mid{animation-duration:6.8s}
-#app[data-state="ANALYSIS"] .ring-inner{animation-duration:5.2s}
-#app[data-state="ANALYSIS"] .arc-a{animation-duration:6.3s}
-#app[data-state="ANALYSIS"] .arc-b{animation-duration:4.9s}
-#app[data-state="VERIFYING"] .ring-outer{animation-duration:7.2s}
-#app[data-state="VERIFYING"] .ring-mid{animation-duration:4.8s}
-#app[data-state="VERIFYING"] .ring-inner{animation-duration:3.6s}
-#app[data-state="VERIFYING"] .arc-a{animation-duration:4.2s}
-#app[data-state="VERIFYING"] .arc-b{animation-duration:3.1s}
-#app[data-state="VERIFYING"] .cg-core-glow{animation-duration:2.15s}
-#app[data-state="VERIFYING"] .cg-scan{animation-duration:3.6s}
-#app[data-state="RESULT"] .cg-particle{opacity:.20}
-#app[data-state="DECISION"] .cg-particle{animation-play-state:paused;opacity:.18}
-
-/* keep test controls subdued */
-#statePanel{
-  bottom:.65%;
-  opacity:.72;
-}
-#statePanel button{
-  padding:5px 2px;
-  font-size:7px;
-  border-color:rgba(70,210,255,.12);
-  background:rgba(0,5,12,.56);
-}
-#statePanel button.active{
-  border-color:rgba(86,228,255,.32);
-  box-shadow:none;
-  background:rgba(10,31,48,.62);
-}
-@keyframes haloTilt{
-  from{transform:translate(-50%,-50%) rotate(0deg) scaleX(1)}
-  to{transform:translate(-50%,-50%) rotate(360deg) scaleX(1)}
-}
-@keyframes haloTiltR{
-  from{transform:translate(-50%,-50%) rotate(360deg)}
-  to{transform:translate(-50%,-50%) rotate(0deg)}
+.r4{
+  width:75%;aspect-ratio:1;
+  border:1px solid rgba(75,203,255,.10);
+  border-top-color:rgba(69,226,255,.27);
+  border-left-color:rgba(153,77,255,.13);
+  animation:spinR 28s linear infinite;
 }
 
+/* Elliptical orbital arcs kept outside the core guard */
+.orbit{
+  position:absolute;
+  left:50%;top:50%;
+  width:86%;height:34%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:1px solid transparent;
+  border-top-color:rgba(86,206,255,.19);
+  border-bottom-color:rgba(169,76,255,.16);
+  mix-blend-mode:screen;
+  animation:orbitSpin 24s linear infinite;
+}
+.orbit.o2{
+  width:80%;height:29%;
+  opacity:.62;
+  animation:orbitSpinR 31s linear infinite;
+}
+
+/* Tiny particles restricted to annulus between 30% and 72% diameter */
+#particles{position:absolute;inset:0}
+.p{
+  position:absolute;
+  width:1.5px;height:1.5px;border-radius:50%;
+  background:rgba(88,225,255,.64);
+  box-shadow:0 0 4px rgba(65,210,255,.45);
+  animation:float var(--d) ease-in-out var(--delay) infinite alternate;
+}
+.p.v{
+  background:rgba(171,82,255,.52);
+  box-shadow:0 0 4px rgba(159,72,255,.35);
+}
+
+/* Very subtle core breathing: glow stays BEHIND the logo; no moving line crosses it */
+.coreGlow{
+  position:absolute;
+  left:50%;top:50%;
+  width:22%;aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(77,220,255,.13),rgba(70,109,255,.04) 54%,transparent 72%);
+  filter:blur(6px);
+  mix-blend-mode:screen;
+  animation:breathe 3.5s ease-in-out infinite;
+}
+
+/* Existing five visual stage blocks become invisible tap zones.
+   No new visible controls are added. */
+.stageTap{
+  position:absolute;
+  top:48.2%;
+  height:7.6%;
+  z-index:5;
+  background:transparent;
+  border:0;
+  padding:0;
+}
+.s1{left:4%;width:17%}.s2{left:22%;width:17%}.s3{left:40%;width:17%}.s4{left:58%;width:17%}.s5{left:76%;width:19%}
+
+/* Functional-state animation mapping */
+#app[data-state="RECEIVED"] .r2,
+#app[data-state="RECEIVED"] .r3,
+#app[data-state="RECEIVED"] .r4,
+#app[data-state="RECEIVED"] .orbit{animation-play-state:paused;opacity:.25}
+
+#app[data-state="ANALYSIS"] .r1{animation-duration:9s}
+#app[data-state="ANALYSIS"] .r2{animation-duration:12s}
+#app[data-state="ANALYSIS"] .r3{animation-duration:15s}
+#app[data-state="ANALYSIS"] .r4{animation-duration:20s}
+
+#app[data-state="VERIFYING"] .r1{animation-duration:6.5s}
+#app[data-state="VERIFYING"] .r2{animation-duration:8.5s}
+#app[data-state="VERIFYING"] .r3{animation-duration:11s}
+#app[data-state="VERIFYING"] .r4{animation-duration:16s}
+#app[data-state="VERIFYING"] .coreGlow{animation-duration:2.1s}
+
+#app[data-state="RESULT"] .r1{animation-duration:14s}
+#app[data-state="RESULT"] .r2{animation-duration:19s}
+#app[data-state="RESULT"] .r3{animation-duration:24s}
+#app[data-state="RESULT"] .r4{animation-duration:32s}
+#app[data-state="RESULT"] .p{opacity:.28}
+
+#app[data-state="DECISION"] .ring,
+#app[data-state="DECISION"] .orbit{animation-play-state:paused}
+#app[data-state="DECISION"] .coreGlow{animation-duration:1.6s}
+
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes spinR{from{transform:translate(-50%,-50%) rotate(360deg)}to{transform:translate(-50%,-50%) rotate(0deg)}}
+@keyframes orbitSpin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes orbitSpinR{from{transform:translate(-50%,-50%) rotate(360deg)}to{transform:translate(-50%,-50%) rotate(0deg)}}
+@keyframes breathe{0%,100%{opacity:.28;transform:translate(-50%,-50%) scale(.96)}50%{opacity:.72;transform:translate(-50%,-50%) scale(1.04)}}
+@keyframes float{0%{transform:translate(-2px,-3px) scale(.75);opacity:.18}100%{transform:translate(3px,5px) scale(1.2);opacity:.68}}
+@media(prefers-reduced-motion:reduce){.ring,.orbit,.coreGlow,.p{animation:none!important}}
 </style>
 </head>
 <body>
 <div id="app" data-state="VERIFYING">
-  <img id="ui" src="aegis-v03-visual.jpg?v=300" alt="AEGIS Ver2">
-  <div id="cgLayer" aria-hidden="true">
-    <div id="coreFx">
-      <div class="cg-ring ring-outer"></div><div class="cg-ring ring-mid"></div><div class="cg-ring ring-inner"></div>
-      <div class="cg-arc arc-a"></div><div class="cg-arc arc-b"></div>
-      <div class="cg-core-glow"></div><div class="cg-scan"></div><div id="particles"></div>
-    </div>
+  <img id="visual" src="aegis-iphone-visual-v1.jpg?v=101" alt="AEGIS">
+
+  <div id="cg" aria-hidden="true">
+    <div class="coreGlow"></div>
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
+    <div class="ring r4"></div>
+    <div class="orbit"></div>
+    <div class="orbit o2"></div>
+    <div id="particles"></div>
+    <div id="coreGuard"></div>
   </div>
-  <div id="statePanel">
-    <button data-state="RECEIVED">RECEIVED</button><button data-state="ANALYSIS">ANALYSIS</button><button data-state="VERIFYING">VERIFYING</button><button data-state="RESULT">RESULT</button><button data-state="DECISION">DECISION</button>
-  </div>
+
+  <button class="stageTap s1" data-state="RECEIVED" aria-label="Received"></button>
+  <button class="stageTap s2" data-state="ANALYSIS" aria-label="Analysis"></button>
+  <button class="stageTap s3" data-state="VERIFYING" aria-label="Verifying"></button>
+  <button class="stageTap s4" data-state="RESULT" aria-label="Result"></button>
+  <button class="stageTap s5" data-state="DECISION" aria-label="Decision"></button>
 </div>
+
 <script>
-(()=>{const app=document.getElementById('app'),pr=document.getElementById('particles');
-for(let i=0;i<34;i++){const p=document.createElement('i');p.className='cg-particle'+(i%6===0?' violet':'');const a=Math.random()*Math.PI*2,r=34+Math.random()*40;p.style.left=(50+Math.cos(a)*r/2)+'%';p.style.top=(50+Math.sin(a)*r/2)+'%';p.style.setProperty('--dur',(3+Math.random()*4).toFixed(2)+'s');p.style.setProperty('--delay',(-Math.random()*3).toFixed(2)+'s');pr.appendChild(p)}
-document.querySelectorAll('#statePanel button').forEach(b=>b.onclick=()=>{app.dataset.state=b.dataset.state;document.querySelectorAll('#statePanel button').forEach(x=>x.classList.toggle('active',x===b))});document.querySelector('[data-state="VERIFYING"]').classList.add('active');
-const coreFx=document.getElementById('coreFx');
-let parallaxT=0;
-function animateDepth(){
-  parallaxT+=0.004;
-  if(coreFx){
-    const px=Math.sin(parallaxT)*.45;
-    const py=Math.cos(parallaxT*.73)*.28;
-    coreFx.style.transform=`translate(calc(-50% + ${px}px),calc(-50% + ${py}px))`;
-  }
-  requestAnimationFrame(animateDepth);
-}
-requestAnimationFrame(animateDepth);
+(()=>{
+ const app=document.getElementById('app');
+ const root=document.getElementById('particles');
+
+ // Annulus-only particle placement: never inside core, never outside main ring area.
+ for(let i=0;i<28;i++){
+   const p=document.createElement('i');
+   p.className='p'+(i%6===0?' v':'');
+   const a=Math.random()*Math.PI*2;
+   const r=28+Math.random()*19; // percentage radius from center
+   p.style.left=(50+Math.cos(a)*r)+'%';
+   p.style.top=(50+Math.sin(a)*r)+'%';
+   p.style.setProperty('--d',(4+Math.random()*5).toFixed(2)+'s');
+   p.style.setProperty('--delay',(-Math.random()*4).toFixed(2)+'s');
+   root.appendChild(p);
+ }
+
+ document.querySelectorAll('.stageTap').forEach(b=>{
+   b.addEventListener('click',()=>{ app.dataset.state=b.dataset.state; });
+ });
 })();
 </script>
 </body>

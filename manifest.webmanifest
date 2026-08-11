@@ -1,11 +1,11 @@
 {
-  "name": "AEGIS CG Motion Integration v0.3 New Visual",
+  "name": "AEGIS iPhone CG Balanced v0.1",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=300",
+  "start_url": "./index.html?v=101",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
-  "theme_color": "#000000",
+  "theme_color": "#00040a",
   "icons": [
     {
       "src": "icon-192.png",
