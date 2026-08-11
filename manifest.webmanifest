@@ -1,7 +1,7 @@
 {
-  "name": "AEGIS iPhone CG Balanced v0.1",
+  "name": "AEGIS iPhone CG Balanced v0.2 Safe Area",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=101",
+  "start_url": "./index.html?v=102",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",

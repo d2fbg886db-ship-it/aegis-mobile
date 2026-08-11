@@ -9,13 +9,37 @@
 <meta name="apple-mobile-web-app-title" content="AEGIS">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>AEGIS Balanced CG v0.1</title>
+<title>AEGIS Balanced CG v0.2 Safe Area</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
-body{position:fixed;inset:0}
-#app{position:fixed;inset:0;width:100vw;height:100dvh;background:#000;overflow:hidden}
-#visual{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;user-select:none;-webkit-user-drag:none}
+:root{
+  /* iPhone 11 Pro Max: 414×896pt, top safe area 44pt, bottom safe area 34pt */
+  --aegis-safe-top:max(env(safe-area-inset-top),44px);
+  --aegis-safe-bottom:max(env(safe-area-inset-bottom),34px);
+}
+body{position:fixed;inset:0;background:#000}
+#app{
+  position:fixed;
+  left:0;
+  right:0;
+  top:var(--aegis-safe-top);
+  bottom:var(--aegis-safe-bottom);
+  width:auto;
+  height:auto;
+  background:#000;
+  overflow:hidden;
+}
+#visual{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:fill;
+  display:block;
+  user-select:none;
+  -webkit-user-drag:none;
+}
 
 /* === CG motion container: central ring area ONLY === */
 #cg{
@@ -175,7 +199,7 @@ body{position:fixed;inset:0}
 </head>
 <body>
 <div id="app" data-state="VERIFYING">
-  <img id="visual" src="aegis-iphone-visual-v1.jpg?v=101" alt="AEGIS">
+  <img id="visual" src="aegis-iphone-visual-v1.jpg?v=102" alt="AEGIS">
 
   <div id="cg" aria-hidden="true">
     <div class="coreGlow"></div>
