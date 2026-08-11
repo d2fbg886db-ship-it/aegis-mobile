@@ -1,7 +1,7 @@
 {
-  "name": "AEGIS Ver2 Safe Header",
+  "name": "AEGIS CG Motion Integration v0.1",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=240",
+  "start_url": "./index.html?v=250",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
