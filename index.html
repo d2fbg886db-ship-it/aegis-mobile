@@ -15,7 +15,7 @@
 html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}
 body{position:fixed;inset:0}
 #app{position:fixed;inset:0;width:100vw;height:100dvh;background:#000;overflow:hidden}
-#ui{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:fill;user-select:none;-webkit-user-drag:none}
+#ui{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;object-position:center center;user-select:none;-webkit-user-drag:none}
 
 #cgLayer{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
 #coreFx{position:absolute;left:50%;top:39.3%;width:53%;aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;isolation:isolate}
@@ -177,7 +177,7 @@ body{position:fixed;inset:0}
 </head>
 <body>
 <div id="app" data-state="VERIFYING">
-  <img id="ui" src="aegis-ver2-safe-header-1242x2688.jpg?v=260" alt="AEGIS Ver2">
+  <img id="ui" src="aegis-v03-visual.jpg?v=300" alt="AEGIS Ver2">
   <div id="cgLayer" aria-hidden="true">
     <div id="coreFx">
       <div class="cg-ring ring-outer"></div><div class="cg-ring ring-mid"></div><div class="cg-ring ring-inner"></div>

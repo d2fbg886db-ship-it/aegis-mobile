@@ -1,7 +1,7 @@
 {
-  "name": "AEGIS CG Motion Integration v0.2",
+  "name": "AEGIS CG Motion Integration v0.3 New Visual",
   "short_name": "AEGIS",
-  "start_url": "./index.html?v=260",
+  "start_url": "./index.html?v=300",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
