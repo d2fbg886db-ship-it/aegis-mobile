@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="AEGIS">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
-<title>AEGIS Balanced CG v0.2 Safe Area</title>
+<title>AEGIS Functional CG v0.1</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden}
@@ -195,11 +195,21 @@ body{position:fixed;inset:0;background:#000}
 @keyframes breathe{0%,100%{opacity:.28;transform:translate(-50%,-50%) scale(.96)}50%{opacity:.72;transform:translate(-50%,-50%) scale(1.04)}}
 @keyframes float{0%{transform:translate(-2px,-3px) scale(.75);opacity:.18}100%{transform:translate(3px,5px) scale(1.2);opacity:.68}}
 @media(prefers-reduced-motion:reduce){.ring,.orbit,.coreGlow,.p{animation:none!important}}
+
+#functionalStatus{position:absolute;left:50%;top:56.35%;transform:translateX(-50%);z-index:6;width:68%;text-align:center;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+#functionalState{font-size:10px;letter-spacing:.18em;color:rgba(135,235,255,.86);text-shadow:0 0 8px rgba(69,214,255,.30);opacity:0;transition:opacity .18s ease}
+#functionalDecision{margin-top:3px;font-size:9px;letter-spacing:.10em;color:rgba(210,245,255,.82);opacity:0;transition:opacity .18s ease}
+#functionalStatus.on #functionalState,#functionalStatus.on #functionalDecision{opacity:1}
+#coreTrigger{position:absolute;left:37%;top:22.4%;width:24%;height:16.5%;z-index:7;border:0;background:transparent;padding:0}
+#app[data-decision="APPROVE"] .coreGlow{background:radial-gradient(circle,rgba(84,255,184,.17),rgba(42,172,120,.05) 54%,transparent 72%)}
+#app[data-decision="REQUEST_EVIDENCE"] .coreGlow{background:radial-gradient(circle,rgba(77,220,255,.16),rgba(70,109,255,.05) 54%,transparent 72%)}
+#app[data-decision="REJECT"] .coreGlow{background:radial-gradient(circle,rgba(255,91,111,.17),rgba(190,42,70,.05) 54%,transparent 72%)}
+
 </style>
 </head>
 <body>
 <div id="app" data-state="VERIFYING">
-  <img id="visual" src="aegis-iphone-visual-v1.jpg?v=102" alt="AEGIS">
+  <img id="visual" src="aegis-iphone-visual-v1.jpg?v=110" alt="AEGIS">
 
   <div id="cg" aria-hidden="true">
     <div class="coreGlow"></div>
@@ -218,6 +228,11 @@ body{position:fixed;inset:0;background:#000}
   <button class="stageTap s3" data-state="VERIFYING" aria-label="Verifying"></button>
   <button class="stageTap s4" data-state="RESULT" aria-label="Result"></button>
   <button class="stageTap s5" data-state="DECISION" aria-label="Decision"></button>
+  <button id="coreTrigger" aria-label="Run AEGIS verification"></button>
+  <div id="functionalStatus" aria-live="polite">
+    <div id="functionalState"></div>
+    <div id="functionalDecision"></div>
+  </div>
 </div>
 
 <script>
@@ -241,6 +256,54 @@ body{position:fixed;inset:0;background:#000}
  document.querySelectorAll('.stageTap').forEach(b=>{
    b.addEventListener('click',()=>{ app.dataset.state=b.dataset.state; });
  });
+
+const AEGIS_STATES=["RECEIVED","ANALYSIS","VERIFYING","RESULT","DECISION"];
+function aegisEvaluate(p){
+  let decision,reason;
+  if(!p.policy?.allowed){decision="REJECT";reason="POLICY_VIOLATION";}
+  else if(!p.evidence?.complete){decision="REQUEST_EVIDENCE";reason="EVIDENCE_INCOMPLETE";}
+  else if(p.risk?.level==="CRITICAL"){decision="REJECT";reason="CRITICAL_RISK";}
+  else if(Number(p.confidence)<0.70){decision="REQUEST_EVIDENCE";reason="CONFIDENCE_BELOW_THRESHOLD";}
+  else {decision="APPROVE";reason="POLICY_EVIDENCE_RISK_CONFIDENCE_PASSED";}
+  return {decision,reason};
+}
+const functionalStatus=document.getElementById('functionalStatus');
+const functionalState=document.getElementById('functionalState');
+const functionalDecision=document.getElementById('functionalDecision');
+const coreTrigger=document.getElementById('coreTrigger');
+const demos=[
+ {proposal_id:"IPHONE-DEMO-APPROVE",evidence:{complete:true},risk:{level:"LOW"},policy:{allowed:true},confidence:.92},
+ {proposal_id:"IPHONE-DEMO-EVIDENCE",evidence:{complete:false},risk:{level:"LOW"},policy:{allowed:true},confidence:.91},
+ {proposal_id:"IPHONE-DEMO-REJECT",evidence:{complete:true},risk:{level:"LOW"},policy:{allowed:false},confidence:.99}
+];
+let running=false,demoIndex=0;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function runFunctionalDemo(){
+ if(running)return;
+ running=true;
+ app.dataset.decision="";
+ functionalStatus.classList.add("on");
+ functionalDecision.textContent="";
+ const proposal=demos[demoIndex%demos.length];
+ demoIndex++;
+ for(const state of AEGIS_STATES){
+   app.dataset.state=state;
+   functionalState.textContent=state;
+   if(state==="RECEIVED") functionalDecision.textContent="Proposal received";
+   if(state==="ANALYSIS") functionalDecision.textContent="Evaluating action";
+   if(state==="VERIFYING") functionalDecision.textContent="Checking evidence / risk / policy";
+   if(state==="RESULT") functionalDecision.textContent="Result prepared";
+   if(state!=="DECISION") await wait(650);
+ }
+ const result=aegisEvaluate(proposal);
+ app.dataset.decision=result.decision;
+ functionalDecision.textContent=result.decision+" · "+result.reason;
+ await wait(1800);
+ functionalStatus.classList.remove("on");
+ running=false;
+}
+coreTrigger.addEventListener("click",runFunctionalDemo);
+
 })();
 </script>
 </body>
